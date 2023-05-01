@@ -1,18 +1,26 @@
 import { ISize } from '../models/Puzzle';
+import { State } from '../state/app.state';
+import { Store } from '@ngrx/store';
+import { tap } from 'rxjs/operators';
+import * as fromPuzzleGame from '../state/index';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 export class Piece {
   SIZE: ISize;
   rowIndex: number;
   columnIndex: number;
-  x: number;
-  y: number;
+  public x: number;
+  public y: number;
   width: number;
   height: number;
+  offset: { x: number; y: number };
 
   constructor(rowIndex: number, columnIndex: number, SIZE: ISize) {
     this.rowIndex = rowIndex;
     this.columnIndex = columnIndex;
     this.SIZE = SIZE;
+
     this.initializePiece(SIZE);
   }
 
@@ -41,4 +49,10 @@ export class Piece {
     context.rect(this.x, this.y, this.width, this.height);
     context.stroke();
   }
+
+  isClose(): boolean {
+    return true;
+  }
+
+  snap(): void {}
 }

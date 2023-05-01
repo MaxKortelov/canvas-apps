@@ -3,6 +3,25 @@ export interface ISize {
   y: number;
   width: number;
   height: number;
-  rows: number;
-  columns: number;
+  rows: LEVEL;
+  columns: LEVEL;
+}
+
+export function initialSize(): ISize {
+  return {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    rows: LEVEL.BEGINNER,
+    columns: LEVEL.BEGINNER
+  };
+}
+
+export enum LEVEL {
+  BEGINNER = 3,
+  AMATOUR = 8,
+  HARD = 16,
+  EXTREMELY_HARD = 32,
+  INSANE = 64
 }

@@ -1,10 +1,16 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { initializer } from './services/media.service';
-import { catchError, tap } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
+import { catchError, filter, map, tap } from 'rxjs/operators';
+import { combineLatest, EMPTY } from 'rxjs';
 import { Piece } from './services/element.service';
-import { ISize } from './models/Puzzle';
+import { Store } from '@ngrx/store';
+import * as fromPuzzleGameActions from './state/app.actions';
+import * as fromPuzzleGame from './state';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { State } from './state/app.state';
+import { initialSize, ISize } from './models/Puzzle';
 
+@UntilDestroy()
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,24 +18,37 @@ import { ISize } from './models/Puzzle';
 })
 export class AppComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement> | null = null;
-  video: HTMLVideoElement = null;
-  SCALER = 0.8;
-  SIZE: ISize = { x: 0, y: 0, width: 0, height: 0, rows: 3, columns: 3 };
-  PIECES: any[] = [];
+
+  constructor(private store: Store<State>) {}
+
+  SCALER: number = 0;
+  SIZE: ISize = initialSize();
+  PIECES: Piece[] = [];
+  SELECTED_PIECE: Piece = null;
 
   ngOnInit(): void {
+    combineLatest([this.store.select(fromPuzzleGame.SCALER), this.store.select(fromPuzzleGame.SIZE)])
+      .pipe(
+        untilDestroyed(this),
+        tap(([SCALER, SIZE]) => {
+          this.SCALER = SCALER;
+          this.SIZE = SIZE;
+        })
+      )
+      .subscribe();
+
     initializer()
       .pipe(
         tap((video) => {
           video.onloadeddata = () => {
-            this.video = video;
             this.setSizes(video.width, video.height);
             window.addEventListener('resize', () => this.setSizes(video.width, video.height));
-            this.canvas.nativeElement && this.updateCanvas(this.canvas.nativeElement, this.video);
+            this.canvas.nativeElement && this.updateCanvas(this.canvas.nativeElement, video);
 
             // divide canvas image into a pieces
             this.initializePieces();
-            this.randomizePieceLocation();
+            // this.randomizePieceLocation();
+            this.addCanvasListeners();
           };
         }),
         catchError((err) => {
@@ -52,7 +71,7 @@ export class AppComponent implements OnInit {
     context.globalAlpha = 1;
 
     for (let i = 0; i < this.PIECES.length; i++) {
-      context && this.PIECES[i].draw(context, this.video);
+      context && this.PIECES[i].draw(context, video);
     }
 
     window.requestAnimationFrame(() => this.updateCanvas(canvas, video));
@@ -61,20 +80,22 @@ export class AppComponent implements OnInit {
   private setSizes(videoWidth: number, videoHeight: number): void {
     const resizer = this.SCALER * Math.min(window.innerWidth / videoWidth, window.innerHeight / videoHeight);
 
-    this.SIZE.width = resizer * videoWidth;
-    this.SIZE.height = resizer * videoHeight;
-    this.SIZE.x = window.innerWidth / 2 - this.SIZE.width / 2;
-    this.SIZE.y = window.innerHeight / 2 - this.SIZE.height / 2;
+    const width = resizer * videoWidth;
+    const height = resizer * videoHeight;
+    const x = window.innerWidth / 2 - width / 2;
+    const y = window.innerHeight / 2 - height / 2;
+
+    this.store.dispatch(fromPuzzleGameActions.changeSize({ SIZE: { ...this.SIZE, width, height, x, y } }));
   }
 
   private initializePieces(): void {
     this.PIECES = [];
+
     for (let i = 0; i < this.SIZE.rows; i++) {
       for (let j = 0; j < this.SIZE.columns; j++) {
         this.PIECES.push(new Piece(i, j, this.SIZE));
       }
     }
-    console.log(this.PIECES);
   }
 
   private randomizePieceLocation(): void {
@@ -86,5 +107,46 @@ export class AppComponent implements OnInit {
       this.PIECES[i].x = Math.abs(location.x);
       this.PIECES[i].y = Math.abs(location.y);
     });
+  }
+
+  private addCanvasListeners(): void {
+    this.canvas.nativeElement.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    this.canvas.nativeElement.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    this.canvas.nativeElement.addEventListener('mouseup', this.handleMouseUp.bind(this));
+  }
+
+  private handleMouseDown(event: MouseEvent): void {
+    this.SELECTED_PIECE = this.getPressedPiece(event);
+    if (this.SELECTED_PIECE) {
+      this.SELECTED_PIECE.offset = {
+        x: event.x - this.SELECTED_PIECE.x,
+        y: event.y - this.SELECTED_PIECE.y
+      };
+    }
+  }
+
+  private handleMouseMove(event: MouseEvent): void {
+    if (this.SELECTED_PIECE) {
+      this.SELECTED_PIECE.x = event.x - this.SELECTED_PIECE.offset.x;
+      this.SELECTED_PIECE.y = event.y - this.SELECTED_PIECE.offset.y;
+    }
+  }
+
+  private handleMouseUp(event: MouseEvent): void {
+    if (this.SELECTED_PIECE && this.SELECTED_PIECE.isClose()) {
+      this.SELECTED_PIECE.snap();
+    }
+    this.SELECTED_PIECE = null;
+  }
+
+  private getPressedPiece(location: MouseEvent): Piece {
+    for (let i = 0; i < this.PIECES.length; i++) {
+      const isOnPieceWidth = location.x > this.PIECES[i].x && location.x < this.PIECES[i].x + this.PIECES[i].width;
+      const isOnPieceHeight = location.y > this.PIECES[i].y && location.y < this.PIECES[i].y + this.PIECES[i].height;
+      if (isOnPieceWidth && isOnPieceHeight) {
+        return this.PIECES[i];
+      }
+    }
+    return null;
   }
 }
