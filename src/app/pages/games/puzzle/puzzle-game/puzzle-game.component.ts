@@ -1,14 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { State } from '../../../state/app.state';
-import { initialSize, ISize } from '../../../models/Puzzle';
-import { Piece } from '../../../services/element.service';
+import { State } from '../../../../state/app.state';
+import { initialSize, ISize } from '../../../../models/Puzzle';
+import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
-import * as fromPuzzleGame from '../../../state';
+import * as fromPuzzleGame from '../state';
 import { untilDestroyed } from '@ngneat/until-destroy';
 import { catchError, tap } from 'rxjs/operators';
-import { initializer } from '../../../services/media.service';
-import * as fromPuzzleGameActions from '../../../state/app.actions';
+import { initializer } from '../../../../services/media.service';
+import * as fromPuzzleGameActions from '../state/puzzle.actions';
 
 @Component({
   selector: 'app-puzzle-game',

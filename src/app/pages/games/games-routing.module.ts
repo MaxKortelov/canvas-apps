@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ShellComponent } from './shell/shell.component';
-import { GamesComponent } from './pages/games/games.component';
+import { GamesComponent } from './games.component';
+import { PuzzleComponent } from './puzzle/puzzle.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/games', pathMatch: 'full' },
   {
     path: '',
-    component: ShellComponent,
+    component: GamesComponent,
     children: [
       {
-        path: 'games',
-        component: GamesComponent
+        path: 'puzzle',
+        component: PuzzleComponent
       }
     ]
   },
@@ -22,4 +22,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class GamesRoutingModule {}

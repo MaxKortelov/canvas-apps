@@ -1,4 +1,4 @@
-import { PuzzleGameState } from '../pages/puzzle/state/puzzle.reducer';
+import { PuzzleGameState } from '../pages/games/puzzle/state/puzzle.reducer';
 
 export interface State {
   puzzleGame: PuzzleGameState;

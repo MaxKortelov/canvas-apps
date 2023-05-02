@@ -1,7 +1,7 @@
 import { createSelector } from '@ngrx/store';
-import { State } from '../../../state/app.state';
+import { State } from '../../../../state/app.state';
 import { PuzzleGameState } from './puzzle.reducer';
-import { ISize } from '../../../models/Puzzle';
+import { ISize } from '../../../../models/Puzzle';
 
 const selectState = (state: State) => state.puzzleGame;
 
