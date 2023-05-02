@@ -1,3 +1,5 @@
+@import "src/styles/themes";
+
 .list {
 
 }
@@ -5,4 +7,17 @@
 .card {
   width: 30%;
   height: 100px;
+  background-color: v(grey-bg);
+  transition: transform 0.1s linear;
+  border: 1px solid v(grey-bg);
+
+  &:hover {
+    transform: scale(1.05);
+    border: 1px solid v(color-text-contrast);
+  }
+
+  img {
+    width: 35%;
+    height: 80%;
+  }
 }

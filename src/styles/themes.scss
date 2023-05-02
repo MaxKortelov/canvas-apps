@@ -18,14 +18,16 @@ $modes: (
     "color-text": $color-black,
     "color-text-contrast": $color-medium-purple,
     "classic-bg": $color-classic,
-    "standard-bg": $color-sand-dollar
+    "standard-bg": $color-sand-dollar,
+    "grey-bg": $color-grey
   ),
   "data-theme='dark'": (
     "color-bg": $color-black,
     "color-text": $color-white,
     "color-text-contrast": $color-ice-cold,
     "classic-bg": $color-classic-izis,
-    "standard-bg": $color-cerulean-blue
+    "standard-bg": $color-cerulean-blue,
+    "grey-bg": $color-grey
   ),
 );
 

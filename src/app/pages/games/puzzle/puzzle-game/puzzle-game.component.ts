@@ -5,11 +5,12 @@ import { initialSize, ISize } from '../../../../models/Puzzle';
 import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
 import * as fromPuzzleGame from '../state';
-import { untilDestroyed } from '@ngneat/until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { catchError, tap } from 'rxjs/operators';
 import { initializer } from '../../../../services/media.service';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
 
+@UntilDestroy()
 @Component({
   selector: 'app-puzzle-game',
   templateUrl: './puzzle-game.component.html',

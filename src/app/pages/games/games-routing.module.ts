@@ -7,7 +7,13 @@ const routes: Routes = Shell.childRoutes([
   {
     path: 'games',
     component: GamesComponent,
-    pathMatch: 'full'
+    pathMatch: 'full',
+    children: [
+      {
+        path: 'puzzle',
+        loadChildren: () => import(`src/app/pages/games/puzzle/puzzle.module`).then((m) => m.PuzzleModule)
+      }
+    ]
   }
 ]);
 

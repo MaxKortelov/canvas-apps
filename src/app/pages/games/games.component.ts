@@ -8,8 +8,9 @@ import { Component, OnInit } from '@angular/core';
 export class GamesComponent implements OnInit {
   GAMES = [
     {
-      name: 'puzzle',
       icon: 'puzzle-game.svg',
+      name: 'Puzzle',
+      description: 'Put all together pieces in a single picture.',
       route: '/games/puzzle'
     }
   ];

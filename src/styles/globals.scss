@@ -1,0 +1,23 @@
+.text-bold {
+  font-weight: bold;
+}
+
+.no-decoration {
+  text-decoration: none;
+  color: v(color-text);
+
+  &:hover {
+    text-decoration: none;
+    color: v(color-text);
+  }
+
+  &:active {
+    text-decoration: none;
+    color: v(color-text);
+  }
+
+  &:visited {
+    text-decoration: none;
+    color: v(color-text);
+  }
+}
