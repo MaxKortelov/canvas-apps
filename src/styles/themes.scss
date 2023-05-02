@@ -1,0 +1,38 @@
+@import "colors";
+
+// Look into https://stackoverflow.com/questions/65665426/how-to-change-sass-import-file-when-body-class-is-changing
+@function keyFilter($iKey, $fKey, $rKey) {
+  @if ($iKey == $fKey) {
+    @return $rKey;
+  }
+  @return $iKey;
+}
+
+@function v($key) {
+  @return var(--#{$key});
+}
+
+$modes: (
+  "data-theme='light'": (
+    "color-bg": $color-white,
+    "color-text": $color-black,
+    "color-text-contrast": $color-medium-purple,
+    "classic-bg": $color-classic,
+    "standard-bg": $color-sand-dollar
+  ),
+  "data-theme='dark'": (
+    "color-bg": $color-black,
+    "color-text": $color-white,
+    "color-text-contrast": $color-ice-cold,
+    "classic-bg": $color-classic-izis,
+    "standard-bg": $color-cerulean-blue
+  ),
+);
+
+@each $key, $map in $modes {
+  div.app-shell#{keyFilter("[#{$key}]", "[data-theme="light"]", null)} {
+    @each $key, $value in $map {
+      --#{$key}: #{$value};
+    }
+  }
+}

@@ -1,1 +1,12 @@
-<p>shell works!</p>
+<div class="app-shell d-flex flex-column" [attr.data-theme]="THEME_MODE">
+  <div class="app-header w-100 d-flex align-items-center justify-content-end px-2">
+    <button class="switch-theme d-flex align-items-center justify-content-center">
+      <i *ngIf="!isDarkTheme" (click)="switchTheme()" class="bi bi-brightness-high h3 m-0"></i>
+      <i *ngIf="isDarkTheme" (click)="switchTheme()" class="bi bi-moon-stars-fill h3 m-0"></i>
+    </button>
+  </div>
+  <div class="app-content w-100">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="app-footer w-100"></div>
+</div>

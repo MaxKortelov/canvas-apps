@@ -22,6 +22,7 @@
     "@ngrx/effects": "^12.3.0",
     "@ngrx/store": "^12.3.0",
     "bootstrap": "^5.2.3",
+    "bootstrap-icons": "^1.10.5",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "~12.2.11",
     "@angular-eslint/eslint-plugin": "^15.2.1",
+    "@angular-eslint/eslint-plugin-template": "^15.2.1",
     "@angular/cli": "~12.2.11",
     "@angular/compiler-cli": "~12.2.0",
     "@ngrx/store-devtools": "^12.3.0",
