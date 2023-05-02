@@ -18,6 +18,12 @@ export function initialSize(): ISize {
   };
 }
 
+export interface IResult {
+  name: string;
+  time: number;
+  isLastResult: boolean;
+}
+
 export enum LEVEL {
   BEGINNER = 3,
   AMATOUR = 8,
@@ -29,5 +35,6 @@ export enum LEVEL {
 export enum GAME_STATUS {
   INITIAL,
   PAUSE,
-  PLAY
+  PLAY,
+  FINISHED
 }

@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '../../../../state/app.state';
-import { GAME_STATUS, initialSize, ISize } from '../../../../models/Puzzle';
+import { GAME_STATUS, initialSize, IResult, ISize } from '../../../../models/Puzzle';
 import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
 import * as fromPuzzleGame from '../state';
@@ -49,7 +49,6 @@ export class PuzzleGameComponent implements OnInit {
   ngAfterViewInit() {
     initializer(this.parentDiv.nativeElement)
       .pipe(
-        tap(() => (this.isLoading = false)),
         tap((video) => {
           video.onloadeddata = () => {
             this.setSizes(video.width, video.height);
@@ -62,6 +61,7 @@ export class PuzzleGameComponent implements OnInit {
             this.addCanvasListeners();
           };
         }),
+        tap(() => (this.isLoading = false)),
         catchError((err) => {
           console.error('Access to camera is not allowed', err);
           return EMPTY;
@@ -218,6 +218,16 @@ export class PuzzleGameComponent implements OnInit {
       this.SELECTED_PIECE.snap();
     }
     this.SELECTED_PIECE = null;
+    if (this.checkCorrectLocations) {
+      this.gameStatus = GAME_STATUS.FINISHED;
+      this.START_TIME += this.TIME;
+      const result: IResult = {
+        name: '',
+        time: this.START_TIME,
+        isLastResult: true
+      };
+      console.log(result);
+    }
   }
 
   private getPressedPiece(location: MouseEvent): Piece {
@@ -231,5 +241,9 @@ export class PuzzleGameComponent implements OnInit {
       }
     }
     return null;
+  }
+
+  get checkCorrectLocations(): boolean {
+    return this.PIECES.filter((piece) => piece.x !== piece.xCorrect && piece.y !== piece.yCorrect).length === 0;
   }
 }

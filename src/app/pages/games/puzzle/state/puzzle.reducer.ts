@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { initialSize, ISize } from '../../../../models/Puzzle';
+import { initialSize, IResult, ISize } from '../../../../models/Puzzle';
 import * as fromPuzzleGameActions from './puzzle.actions';
 
 export enum PuzzleStatus {
@@ -13,13 +13,17 @@ export interface PuzzleGameState {
   STATUS: PuzzleStatus;
   SCALER: number;
   SIZE: ISize;
+  name: string;
+  results: IResult[];
 }
 
 export function initialAppState(): PuzzleGameState {
   return {
     STATUS: PuzzleStatus.IDLE,
     SCALER: 0.8,
-    SIZE: initialSize()
+    SIZE: initialSize(),
+    name: '',
+    results: []
   };
 }
 
@@ -36,6 +40,14 @@ const puzleGameReducerPrivate = createReducer(
       rows: level,
       columns: level
     }
+  })),
+  on(fromPuzzleGameActions.changeName, (state, { name }) => ({
+    ...state,
+    name
+  })),
+  on(fromPuzzleGameActions.updateResults, (state, { results }) => ({
+    ...state,
+    results
   }))
 );
 
