@@ -1,0 +1,22 @@
+@import "src/styles/themes";
+
+.title {
+  color: v(color-text-contrast)
+}
+
+.menu-options {
+  min-width: 300px;
+  max-width: 600px;
+  width: 30rem;
+  min-height: 300px;
+  max-height: 600px;
+  height: 30rem;
+  background-color: v(grey-bg);
+  border-radius: 12px;
+  color: v(color-text);
+}
+
+.start-game {
+  border-radius: 12px;
+  background-color: v(standard-bg);
+}

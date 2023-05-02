@@ -1,1 +1,13 @@
-<p>puzzle-home works!</p>
+<div class="game-menu w-100 h-100 d-flex align-items-center justify-content-center flex-column">
+  <div class="title h2 text-bold text-capitalize mb-4"> puzzle </div>
+  <div class="menu-options p-3 d-flex flex-column align-items-center justify-content-between py-5">
+    <div class="h4 text-bold">Choose desired settings and enjoy!</div>
+    <div class="difficulty">
+      <div class="d-flex gap-2" *ngFor="let level of DIFFICULTY">
+        <input type="radio" [checked]="level === DIFFICULTY[0]" value="{{ level }}" id="{{ level }}" name="difficulty" (change)="switchLevel(level)" />
+        <label for="{{ level }}">{{ level }}</label>
+      </div>
+    </div>
+    <a class="text-capitalize text-bold no-decoration p-4 start-game" routerLink="game"> start game </a>
+  </div>
+</div>

@@ -28,6 +28,14 @@ const puzleGameReducerPrivate = createReducer(
   on(fromPuzzleGameActions.changeSize, (state, { SIZE }) => ({
     ...state,
     SIZE
+  })),
+  on(fromPuzzleGameActions.changeDifficulty, (state, { level }) => ({
+    ...state,
+    SIZE: {
+      ...state.SIZE,
+      rows: level,
+      columns: level
+    }
   }))
 );
 

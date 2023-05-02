@@ -21,7 +21,7 @@ export function initialSize(): ISize {
 export enum LEVEL {
   BEGINNER = 3,
   AMATOUR = 8,
-  HARD = 16,
-  EXTREMELY_HARD = 32,
-  INSANE = 64
+  HARD = 12,
+  EXTREMELY_HARD = 18,
+  INSANE = 24
 }
