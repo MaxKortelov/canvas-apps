@@ -6,6 +6,6 @@ import { GamesRoutingModule } from './games-routing.module';
 
 @NgModule({
   declarations: [GamesComponent],
-  imports: [CommonModule, GamesRoutingModule, PuzzleModule]
+  imports: [CommonModule, PuzzleModule, GamesRoutingModule]
 })
 export class GamesModule {}

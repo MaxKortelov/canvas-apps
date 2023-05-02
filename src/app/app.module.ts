@@ -13,12 +13,13 @@ import { GamesModule } from './pages/games/games.module';
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({ maxAge: 25 }),
+    GamesModule,
     ShellModule,
-    GamesModule
+    // keep last
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]

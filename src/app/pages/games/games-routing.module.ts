@@ -1,25 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GamesComponent } from './games.component';
-import { PuzzleComponent } from './puzzle/puzzle.component';
+import { Shell } from '../../shell/Shell';
 
-const routes: Routes = [
-  { path: '', redirectTo: '/games', pathMatch: 'full' },
+const routes: Routes = Shell.childRoutes([
   {
-    path: '',
+    path: 'games',
     component: GamesComponent,
-    children: [
-      {
-        path: 'puzzle',
-        component: PuzzleComponent
-      }
-    ]
-  },
-  { path: '**', redirectTo: '', pathMatch: 'full' }
-];
+    pathMatch: 'full'
+  }
+]);
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class GamesRoutingModule {}

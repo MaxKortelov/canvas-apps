@@ -1,1 +1,6 @@
-<p>games works!</p>
+<div *ngFor="let game of GAMES" class="list w-100 h-100 d-flex p-3">
+  <a class="card g-4" routerLink="{{game.route}}">
+    <img src="assets/games/{{game.icon}}"/>
+    <div>{{game.name}}</div>
+  </a>
+</div>

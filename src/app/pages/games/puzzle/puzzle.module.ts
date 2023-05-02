@@ -7,9 +7,15 @@ import { PuzzleResultsComponent } from './puzzle-results/puzzle-results.componen
 import { StoreModule } from '@ngrx/store';
 import { puzleGameReducer } from './state/puzzle.reducer';
 import { EffectsModule } from '@ngrx/effects';
+import { PuzzleRoutingModule } from './puzzle-routing.module';
 
 @NgModule({
   declarations: [PuzzleComponent, PuzzleHomeComponent, PuzzleGameComponent, PuzzleResultsComponent],
-  imports: [CommonModule, StoreModule.forFeature('puzzleGame', puzleGameReducer), EffectsModule.forRoot([])]
+  imports: [
+    CommonModule,
+    PuzzleRoutingModule,
+    StoreModule.forFeature('puzzleGame', puzleGameReducer),
+    EffectsModule.forRoot([])
+  ]
 })
 export class PuzzleModule {}

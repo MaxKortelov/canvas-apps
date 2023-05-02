@@ -1,22 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ShellComponent } from './shell/shell.component';
-import { GamesComponent } from './pages/games/games.component';
 
-const routes: Routes = [
-  { path: '', redirectTo: '/games', pathMatch: 'full' },
-  {
-    path: '',
-    component: ShellComponent,
-    children: [
-      {
-        path: 'games',
-        component: GamesComponent
-      }
-    ]
-  },
-  { path: '**', redirectTo: '', pathMatch: 'full' }
-];
+const routes: Routes = [{ path: '**', redirectTo: 'games', pathMatch: 'full' }];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
