@@ -4,7 +4,7 @@ import { State } from '../../../../state/app.state';
 import { Store } from '@ngrx/store';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
 import * as fromPuzzleGame from '../state';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-puzzle-home',
@@ -13,6 +13,7 @@ import { tap } from 'rxjs/operators';
 })
 export class PuzzleHomeComponent implements OnInit {
   DIFFICULTY = this.setLevels();
+  CURRENT_DIFFICULTY: string;
   name: string;
 
   constructor(private store: Store<State>) {}
@@ -21,6 +22,15 @@ export class PuzzleHomeComponent implements OnInit {
     this.store
       .select(fromPuzzleGame.name)
       .pipe(tap((name) => (this.name = name)))
+      .subscribe();
+
+    this.store
+      .select(fromPuzzleGame.SIZE)
+      .pipe(
+        map((SIZE) => {
+          this.CURRENT_DIFFICULTY = LEVEL[SIZE.rows].replace('_', ' ');
+        })
+      )
       .subscribe();
   }
 

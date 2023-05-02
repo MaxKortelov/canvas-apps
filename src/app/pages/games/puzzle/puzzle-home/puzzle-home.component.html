@@ -8,7 +8,7 @@
     </div>
     <div class="difficulty">
       <div class="d-flex gap-2" *ngFor="let level of DIFFICULTY">
-        <input type="radio" [checked]="level === DIFFICULTY[0]" value="{{ level }}" id="{{ level }}" name="difficulty" (change)="switchLevel(level)" />
+        <input type="radio" [checked]="level === CURRENT_DIFFICULTY" value="{{ level }}" id="{{ level }}" name="difficulty" (change)="switchLevel(level)" />
         <label for="{{ level }}">{{ level }}</label>
       </div>
     </div>
