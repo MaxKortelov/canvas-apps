@@ -1,5 +1,17 @@
 @import "src/styles/themes";
 
+.game-panel {
+  width: 200px;
+  top: 0;
+  left: calc(50% - 100px);
+  border: 1px solid v(classic-bg);
+  border-top: 0;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  color: v(color-text);
+  background-color: v(standard-bg);
+}
+
 .container {
   width: 100%;
   min-width: 100%;
@@ -18,5 +30,6 @@
 
   .play-icon {
     font-size: 6rem;
+    color: v(color-text);
   }
 }

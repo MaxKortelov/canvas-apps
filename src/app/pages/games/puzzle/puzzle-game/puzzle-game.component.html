@@ -1,5 +1,11 @@
 <div #parentDiv class="container p-0 m-0 w-100 h-100">
-  <div class="game-stopper d-flex justify-content-center align-items-center" (click)="startGame()" *ngIf="isInitialGame && !isLoading">
+  <div class="game-panel d-flex gap-3 position-absolute align-items-center justify-content-start px-2">
+    <a class="no-decoration" routerLink="../"><i class="bi bi-arrow-left-circle h1 cursor-pointer"></i></a>
+    <i class="bi bi-pause-circle cursor-pointer h1 m-0" (click)="updateGameStatus()"></i>
+    <div *ngIf="!isPausedGame">{{ PLAYED_TIME + TIME | date:"mm:ss:SS"}}</div>
+    <div *ngIf="isPausedGame">{{ PLAYED_TIME | date:"mm:ss:SS"}}</div>
+  </div>
+  <div class="game-stopper d-flex justify-content-center align-items-center" (click)="updateGameStatus()" *ngIf="isPausedGame && !isLoading">
     <i class="bi bi-play-circle play-icon cursor-pointer"></i>
   </div>
   <app-loader [isLoading]="isLoading"></app-loader>

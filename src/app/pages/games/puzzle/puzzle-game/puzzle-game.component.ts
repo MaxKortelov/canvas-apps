@@ -27,6 +27,10 @@ export class PuzzleGameComponent implements OnInit {
   PIECES: Piece[] = [];
   SELECTED_PIECE: Piece = null;
 
+  PLAYED_TIME: number = 0;
+  START_TIME: number = 0;
+  TIME: number = 0;
+
   isLoading = true;
   gameStatus: GAME_STATUS = GAME_STATUS.INITIAL;
 
@@ -50,7 +54,7 @@ export class PuzzleGameComponent implements OnInit {
           video.onloadeddata = () => {
             this.setSizes(video.width, video.height);
             this.parentDiv.nativeElement.addEventListener('resize', () => this.setSizes(video.width, video.height));
-            this.canvas.nativeElement && this.updateCanvas(this.canvas.nativeElement, video);
+            this.canvas.nativeElement && this.updateGame(this.canvas.nativeElement, video);
 
             // divide canvas image into a pieces
             this.initializePieces();
@@ -66,10 +70,21 @@ export class PuzzleGameComponent implements OnInit {
       .subscribe();
   }
 
-  startGame(): void {
+  updateGameStatus(): void {
     switch (this.gameStatus) {
       case GAME_STATUS.INITIAL: {
         this.randomizePieceLocation();
+        this.START_TIME = new Date().getTime();
+        break;
+      }
+      case GAME_STATUS.PLAY: {
+        this.gameStatus = GAME_STATUS.PAUSE;
+        this.PLAYED_TIME += this.TIME;
+        break;
+      }
+      case GAME_STATUS.PAUSE: {
+        this.gameStatus = GAME_STATUS.PLAY;
+        this.START_TIME = new Date().getTime();
         break;
       }
       default: {
@@ -78,11 +93,15 @@ export class PuzzleGameComponent implements OnInit {
     }
   }
 
-  get isInitialGame(): boolean {
-    return this.gameStatus === GAME_STATUS.INITIAL;
+  get isPausedGame(): boolean {
+    return this.gameStatus === GAME_STATUS.INITIAL || this.gameStatus === GAME_STATUS.PAUSE;
   }
 
-  private updateCanvas(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
+  private updateTime(): void {
+    this.TIME = new Date().getTime() - this.START_TIME;
+  }
+
+  private updateGame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
     canvas.width = this.parentDiv.nativeElement.offsetWidth;
     canvas.height = this.parentDiv.nativeElement.offsetHeight;
     const context = this.canvas.nativeElement.getContext('2d');
@@ -93,11 +112,13 @@ export class PuzzleGameComponent implements OnInit {
     context.drawImage(video, this.SIZE.x, this.SIZE.y, this.SIZE.width, this.SIZE.height);
     context.globalAlpha = 1;
 
+    this.gameStatus === GAME_STATUS.PLAY && this.updateTime();
+
     for (let i = 0; i < this.PIECES.length; i++) {
       context && this.PIECES[i].draw(context, video);
     }
 
-    window.requestAnimationFrame(() => this.updateCanvas(canvas, video));
+    window.requestAnimationFrame(() => this.updateGame(canvas, video));
   }
 
   private setSizes(videoWidth: number, videoHeight: number): void {
@@ -170,6 +191,7 @@ export class PuzzleGameComponent implements OnInit {
   }
 
   private handleMouseDown(event: MouseEvent): void {
+    this.gameStatus = GAME_STATUS.PLAY;
     this.SELECTED_PIECE = this.getPressedPiece(event);
     if (this.SELECTED_PIECE) {
       const index = this.PIECES.indexOf(this.SELECTED_PIECE);
