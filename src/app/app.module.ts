@@ -8,6 +8,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ShellModule } from './shell/shell.module';
 import { GamesModule } from './pages/games/games.module';
+import { SharedModule } from './@shared/components/shared.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,6 +17,7 @@ import { GamesModule } from './pages/games/games.module';
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({ maxAge: 25 }),
+    SharedModule,
     GamesModule,
     ShellModule,
     // keep last

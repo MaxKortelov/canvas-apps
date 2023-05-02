@@ -25,3 +25,9 @@ export enum LEVEL {
   EXTREMELY_HARD = 18,
   INSANE = 24
 }
+
+export enum GAME_STATUS {
+  INITIAL,
+  PAUSE,
+  PLAY
+}

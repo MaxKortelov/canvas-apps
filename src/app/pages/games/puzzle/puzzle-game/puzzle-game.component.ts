@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { State } from '../../../../state/app.state';
-import { initialSize, ISize } from '../../../../models/Puzzle';
+import { GAME_STATUS, initialSize, ISize } from '../../../../models/Puzzle';
 import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
 import * as fromPuzzleGame from '../state';
@@ -18,6 +18,7 @@ import * as fromPuzzleGameActions from '../state/puzzle.actions';
 })
 export class PuzzleGameComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement> | null = null;
+  @ViewChild('parentDiv', { static: false }) parentDiv: ElementRef<HTMLDivElement> | null = null;
 
   constructor(private store: Store<State>) {}
 
@@ -25,6 +26,9 @@ export class PuzzleGameComponent implements OnInit {
   SIZE: ISize = initialSize();
   PIECES: Piece[] = [];
   SELECTED_PIECE: Piece = null;
+
+  isLoading = true;
+  gameStatus: GAME_STATUS = GAME_STATUS.INITIAL;
 
   ngOnInit(): void {
     combineLatest([this.store.select(fromPuzzleGame.SCALER), this.store.select(fromPuzzleGame.SIZE)])
@@ -36,13 +40,16 @@ export class PuzzleGameComponent implements OnInit {
         })
       )
       .subscribe();
+  }
 
-    initializer()
+  ngAfterViewInit() {
+    initializer(this.parentDiv.nativeElement)
       .pipe(
+        tap(() => (this.isLoading = false)),
         tap((video) => {
           video.onloadeddata = () => {
             this.setSizes(video.width, video.height);
-            window.addEventListener('resize', () => this.setSizes(video.width, video.height));
+            this.parentDiv.nativeElement.addEventListener('resize', () => this.setSizes(video.width, video.height));
             this.canvas.nativeElement && this.updateCanvas(this.canvas.nativeElement, video);
 
             // divide canvas image into a pieces
@@ -59,9 +66,25 @@ export class PuzzleGameComponent implements OnInit {
       .subscribe();
   }
 
+  startGame(): void {
+    switch (this.gameStatus) {
+      case GAME_STATUS.INITIAL: {
+        this.randomizePieceLocation();
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  get isInitialGame(): boolean {
+    return this.gameStatus === GAME_STATUS.INITIAL;
+  }
+
   private updateCanvas(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = this.parentDiv.nativeElement.offsetWidth;
+    canvas.height = this.parentDiv.nativeElement.offsetHeight;
     const context = this.canvas.nativeElement.getContext('2d');
 
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -78,12 +101,17 @@ export class PuzzleGameComponent implements OnInit {
   }
 
   private setSizes(videoWidth: number, videoHeight: number): void {
-    const resizer = this.SCALER * Math.min(window.innerWidth / videoWidth, window.innerHeight / videoHeight);
+    const resizer =
+      this.SCALER *
+      Math.min(
+        this.parentDiv.nativeElement.offsetWidth / videoWidth,
+        this.parentDiv.nativeElement.offsetHeight / videoHeight
+      );
 
     const width = resizer * videoWidth;
     const height = resizer * videoHeight;
-    const x = window.innerWidth / 2 - width / 2;
-    const y = window.innerHeight / 2 - height / 2;
+    const x = this.parentDiv.nativeElement.offsetWidth / 2 - width / 2;
+    const y = this.parentDiv.nativeElement.offsetHeight / 2 - height / 2;
 
     this.store.dispatch(fromPuzzleGameActions.changeSize({ SIZE: { ...this.SIZE, width, height, x, y } }));
   }
@@ -107,6 +135,7 @@ export class PuzzleGameComponent implements OnInit {
       this.PIECES[i].x = Math.abs(location.x);
       this.PIECES[i].y = Math.abs(location.y);
     });
+    this.gameStatus = GAME_STATUS.PLAY;
   }
 
   private addCanvasListeners(): void {
@@ -149,16 +178,16 @@ export class PuzzleGameComponent implements OnInit {
         this.PIECES.push(this.SELECTED_PIECE);
       }
       this.SELECTED_PIECE.offset = {
-        x: event.x - this.SELECTED_PIECE.x,
-        y: event.y - this.SELECTED_PIECE.y
+        x: event.offsetX - this.SELECTED_PIECE.x,
+        y: event.offsetY - this.SELECTED_PIECE.y
       };
     }
   }
 
   private handleMouseMove(event: MouseEvent): void {
     if (this.SELECTED_PIECE) {
-      this.SELECTED_PIECE.x = event.x - this.SELECTED_PIECE.offset.x;
-      this.SELECTED_PIECE.y = event.y - this.SELECTED_PIECE.offset.y;
+      this.SELECTED_PIECE.x = event.offsetX - this.SELECTED_PIECE.offset.x;
+      this.SELECTED_PIECE.y = event.offsetY - this.SELECTED_PIECE.offset.y;
     }
   }
 
@@ -171,8 +200,10 @@ export class PuzzleGameComponent implements OnInit {
 
   private getPressedPiece(location: MouseEvent): Piece {
     for (let i = this.PIECES.length - 1; i >= 0; i--) {
-      const isOnPieceWidth = location.x > this.PIECES[i].x && location.x < this.PIECES[i].x + this.PIECES[i].width;
-      const isOnPieceHeight = location.y > this.PIECES[i].y && location.y < this.PIECES[i].y + this.PIECES[i].height;
+      const isOnPieceWidth =
+        location.offsetX > this.PIECES[i].x && location.offsetX < this.PIECES[i].x + this.PIECES[i].width;
+      const isOnPieceHeight =
+        location.offsetY > this.PIECES[i].y && location.offsetY < this.PIECES[i].y + this.PIECES[i].height;
       if (isOnPieceWidth && isOnPieceHeight) {
         return this.PIECES[i];
       }
