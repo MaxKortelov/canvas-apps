@@ -6,7 +6,8 @@ import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { puzleGameReducer } from './state/app.reducers';
+import { ShellModule } from './shell/shell.module';
+import { GamesModule } from './pages/games/games.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,8 +15,10 @@ import { puzleGameReducer } from './state/app.reducers';
     BrowserModule,
     AppRoutingModule,
     EffectsModule.forRoot([]),
-    StoreModule.forRoot({ puzzleGame: puzleGameReducer }),
-    StoreDevtoolsModule.instrument({ maxAge: 25 })
+    StoreModule.forRoot({}),
+    StoreDevtoolsModule.instrument({ maxAge: 25 }),
+    ShellModule,
+    GamesModule
   ],
   providers: [],
   bootstrap: [AppComponent]

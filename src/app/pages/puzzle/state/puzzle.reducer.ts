@@ -1,8 +1,8 @@
-import { initialSize, ISize } from '../models/Puzzle';
 import { Action, createReducer, on } from '@ngrx/store';
-import * as fromPuzzleGameActions from './app.actions';
+import { initialSize, ISize } from '../../../models/Puzzle';
+import * as fromPuzzleGameActions from './puzzle.actions';
 
-export enum AppStatus {
+export enum PuzzleStatus {
   IDLE = 'IDLE',
   LOADING = 'LOADING',
   DATA = 'DATA',
@@ -10,14 +10,14 @@ export enum AppStatus {
 }
 
 export interface PuzzleGameState {
-  STATUS: AppStatus;
+  STATUS: PuzzleStatus;
   SCALER: number;
   SIZE: ISize;
 }
 
 export function initialAppState(): PuzzleGameState {
   return {
-    STATUS: AppStatus.IDLE,
+    STATUS: PuzzleStatus.IDLE,
     SCALER: 0.8,
     SIZE: initialSize()
   };
