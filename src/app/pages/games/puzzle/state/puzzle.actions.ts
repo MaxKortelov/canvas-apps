@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { IResult, ISize, LEVEL } from '../../../../models/Puzzle';
+import {PuzzleGameState} from "./puzzle.reducer";
 
 export const changeSize = createAction('[puzzle-game] Change size', props<{ SIZE: ISize }>());
 
@@ -12,3 +13,5 @@ export const updateResult = createAction('[puzzle-game] Add result to list of re
 export const nullifyIsLastResult = createAction('[puzzle-game] Nullify results');
 
 export const updateResults = createAction('[puzzle-game] Update results', props<{ results: IResult[] }>());
+
+export const setInitialPuzzleGameState = createAction('[puzzle-game] Set initial puzzle game stae', props<{ puzzleGameState: PuzzleGameState }>());

@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
 import * as fromPuzzleGame from '../state';
 import { map, tap } from 'rxjs/operators';
+import {LocalStorageService} from "../../../../services/local-storage.service";
 
 @Component({
   selector: 'app-puzzle-home',

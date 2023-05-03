@@ -10,5 +10,7 @@ import { UntilDestroy } from '@ngneat/until-destroy';
 export class AppComponent implements OnInit {
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+  }
 }

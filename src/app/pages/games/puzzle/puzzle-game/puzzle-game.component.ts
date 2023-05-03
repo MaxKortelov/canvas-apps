@@ -6,10 +6,12 @@ import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
 import * as fromPuzzleGame from '../state';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { catchError, tap } from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import { initializer } from '../../../../services/media.service';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
 import { ActivatedRoute, Router } from '@angular/router';
+import {LocalStorageService} from "../../../../services/local-storage.service";
+import * as fromAppState from "../../../../state";
 
 @UntilDestroy()
 @Component({
@@ -21,7 +23,7 @@ export class PuzzleGameComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement> | null = null;
   @ViewChild('parentDiv', { static: false }) parentDiv: ElementRef<HTMLDivElement> | null = null;
 
-  constructor(private store: Store<State>, private router: Router, private route: ActivatedRoute) {}
+  constructor(private store: Store<State>, private router: Router, private route: ActivatedRoute, private localStorageService: LocalStorageService) {}
 
   SCALER: number = 0;
   SIZE: ISize = initialSize();
@@ -37,6 +39,8 @@ export class PuzzleGameComponent implements OnInit {
   gameStatus: GAME_STATUS = GAME_STATUS.INITIAL;
 
   ngOnInit(): void {
+    this.saveDataToLocalStorage();
+
     combineLatest([
       this.store.select(fromPuzzleGame.SCALER),
       this.store.select(fromPuzzleGame.SIZE),
@@ -235,6 +239,7 @@ export class PuzzleGameComponent implements OnInit {
         difficulty: this.SIZE.rows
       };
       this.store.dispatch(fromPuzzleGameActions.updateResult({ result }));
+      this.saveDataToLocalStorage();
       this.router.navigate(['../result'], { relativeTo: this.route });
     }
   }
@@ -252,22 +257,16 @@ export class PuzzleGameComponent implements OnInit {
     return null;
   }
 
-  // private initializeValues(): void {
-  //   this.SCALER = 0;
-  //   this.SIZE = initialSize();
-  //   this.name = '';
-  //   this.PIECES = [];
-  //   this.SELECTED_PIECE = null;
-  //
-  //   this.PLAYED_TIME = 0;
-  //   this.START_TIME = 0;
-  //   this.TIME = 0;
-  //
-  //   this.isLoading = true;
-  //   this.gameStatus = GAME_STATUS.INITIAL;
-  // }
-
   get checkCorrectLocations(): boolean {
     return this.PIECES.filter((piece) => piece.x !== piece.xCorrect && piece.y !== piece.yCorrect).length === 0;
+  }
+
+  saveDataToLocalStorage(): void {
+    this.store.select(fromAppState.STATE).pipe(
+      untilDestroyed(this),
+      tap(localData => {
+        this.localStorageService.syncSaveData(localData);
+      })
+    ).subscribe()
   }
 }

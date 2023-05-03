@@ -17,7 +17,7 @@ export interface PuzzleGameState {
   results: IResult[];
 }
 
-export function initialAppState(): PuzzleGameState {
+export function initialPuzzleGameState(): PuzzleGameState {
   return {
     STATUS: PuzzleStatus.IDLE,
     SCALER: 0.8,
@@ -28,7 +28,7 @@ export function initialAppState(): PuzzleGameState {
 }
 
 const puzleGameReducerPrivate = createReducer(
-  initialAppState(),
+  initialPuzzleGameState(),
   on(fromPuzzleGameActions.changeSize, (state, { SIZE }) => ({
     ...state,
     SIZE
@@ -48,6 +48,10 @@ const puzleGameReducerPrivate = createReducer(
   on(fromPuzzleGameActions.updateResults, (state, { results }) => ({
     ...state,
     results
+  })),
+  on(fromPuzzleGameActions.setInitialPuzzleGameState, (state, { puzzleGameState }) => ({
+    ...state,
+    ...puzzleGameState
   }))
 );
 

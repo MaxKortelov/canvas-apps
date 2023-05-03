@@ -15,7 +15,6 @@ export class PuzzleEffects {
       map(([{ result }, results]) => {
         let newResults = [...results, result];
         newResults.sort((a, b) => a.time - b.time);
-        console.log(newResults);
         return newResults;
       }),
       map((results) => fromPuzzleGameActions.updateResults({ results }))
