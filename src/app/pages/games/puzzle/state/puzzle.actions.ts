@@ -7,6 +7,8 @@ export const changeDifficulty = createAction('[puzzle-game] Change difficulty', 
 
 export const changeName = createAction('[puzzle-game] Change name', props<{ name: string }>());
 
-export const updateResult = createAction('[puzzle-game] Update result', props<{ result: IResult }>());
+export const updateResult = createAction('[puzzle-game] Add result to list of results', props<{ result: IResult }>());
+
+export const nullifyIsLastResult = createAction('[puzzle-game] Nullify results');
 
 export const updateResults = createAction('[puzzle-game] Update results', props<{ results: IResult[] }>());

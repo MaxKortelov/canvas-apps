@@ -14,22 +14,14 @@ export const routes: Routes = Shell.childRoutes([
       {
         path: '',
         component: PuzzleHomeComponent
-        // loadChildren: () =>
-        //   import(`src/app/pages/games/puzzle/puzzle-home/puzzle-home.component`).then((m) => m.PuzzleHomeComponent)
       },
       {
         path: 'game',
         component: PuzzleGameComponent
-        // loadChildren: () =>
-        //   import(`src/app/pages/games/puzzle/puzzle-game/puzzle-game.component`).then((m) => m.PuzzleGameComponent)
       },
       {
         path: 'result',
         component: PuzzleResultsComponent
-        // loadChildren: () =>
-        //   import(`src/app/pages/games/puzzle/puzzle-results/puzzle-results.component`).then(
-        //     (m) => m.PuzzleResultsComponent
-        //   )
       }
     ]
   }

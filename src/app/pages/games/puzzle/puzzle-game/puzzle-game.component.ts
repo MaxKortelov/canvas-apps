@@ -9,6 +9,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { catchError, tap } from 'rxjs/operators';
 import { initializer } from '../../../../services/media.service';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -20,10 +21,11 @@ export class PuzzleGameComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement> | null = null;
   @ViewChild('parentDiv', { static: false }) parentDiv: ElementRef<HTMLDivElement> | null = null;
 
-  constructor(private store: Store<State>) {}
+  constructor(private store: Store<State>, private router: Router, private route: ActivatedRoute) {}
 
   SCALER: number = 0;
   SIZE: ISize = initialSize();
+  name: string = '';
   PIECES: Piece[] = [];
   SELECTED_PIECE: Piece = null;
 
@@ -35,12 +37,17 @@ export class PuzzleGameComponent implements OnInit {
   gameStatus: GAME_STATUS = GAME_STATUS.INITIAL;
 
   ngOnInit(): void {
-    combineLatest([this.store.select(fromPuzzleGame.SCALER), this.store.select(fromPuzzleGame.SIZE)])
+    combineLatest([
+      this.store.select(fromPuzzleGame.SCALER),
+      this.store.select(fromPuzzleGame.SIZE),
+      this.store.select(fromPuzzleGame.name)
+    ])
       .pipe(
         untilDestroyed(this),
-        tap(([SCALER, SIZE]) => {
+        tap(([SCALER, SIZE, name]) => {
           this.SCALER = SCALER;
           this.SIZE = SIZE;
+          this.name = name;
         })
       )
       .subscribe();
@@ -222,11 +229,12 @@ export class PuzzleGameComponent implements OnInit {
       this.gameStatus = GAME_STATUS.FINISHED;
       this.START_TIME += this.TIME;
       const result: IResult = {
-        name: '',
+        name: this.name,
         time: this.START_TIME,
         isLastResult: true
       };
-      console.log(result);
+      this.store.dispatch(fromPuzzleGameActions.updateResult({ result }));
+      this.router.navigate(['../result'], { relativeTo: this.route });
     }
   }
 

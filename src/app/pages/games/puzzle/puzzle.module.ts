@@ -9,6 +9,7 @@ import { puzleGameReducer } from './state/puzzle.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { PuzzleRoutingModule } from './puzzle-routing.module';
 import { SharedModule } from '../../../@shared/components/shared.module';
+import { PuzzleEffects } from './state/puzzle.effects';
 
 @NgModule({
   declarations: [PuzzleComponent, PuzzleHomeComponent, PuzzleGameComponent, PuzzleResultsComponent],
@@ -16,7 +17,7 @@ import { SharedModule } from '../../../@shared/components/shared.module';
     CommonModule,
     PuzzleRoutingModule,
     StoreModule.forFeature('puzzleGame', puzleGameReducer),
-    EffectsModule.forRoot([]),
+    EffectsModule.forFeature([PuzzleEffects]),
     SharedModule
   ]
 })
