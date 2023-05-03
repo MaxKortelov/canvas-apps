@@ -227,11 +227,12 @@ export class PuzzleGameComponent implements OnInit {
     this.SELECTED_PIECE = null;
     if (this.checkCorrectLocations) {
       this.gameStatus = GAME_STATUS.FINISHED;
-      this.START_TIME += this.TIME;
+      this.PLAYED_TIME += this.TIME;
       const result: IResult = {
         name: this.name,
-        time: this.START_TIME,
-        isLastResult: true
+        time: this.PLAYED_TIME,
+        isLastResult: true,
+        difficulty: this.SIZE.rows
       };
       this.store.dispatch(fromPuzzleGameActions.updateResult({ result }));
       this.router.navigate(['../result'], { relativeTo: this.route });
@@ -250,6 +251,21 @@ export class PuzzleGameComponent implements OnInit {
     }
     return null;
   }
+
+  // private initializeValues(): void {
+  //   this.SCALER = 0;
+  //   this.SIZE = initialSize();
+  //   this.name = '';
+  //   this.PIECES = [];
+  //   this.SELECTED_PIECE = null;
+  //
+  //   this.PLAYED_TIME = 0;
+  //   this.START_TIME = 0;
+  //   this.TIME = 0;
+  //
+  //   this.isLoading = true;
+  //   this.gameStatus = GAME_STATUS.INITIAL;
+  // }
 
   get checkCorrectLocations(): boolean {
     return this.PIECES.filter((piece) => piece.x !== piece.xCorrect && piece.y !== piece.yCorrect).length === 0;

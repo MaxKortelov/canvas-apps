@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { initialSize, IResult, ISize } from '../../../../models/Puzzle';
+import { initialSize, IResult, ISize, LEVEL } from '../../../../models/Puzzle';
 import * as fromPuzzleGameActions from './puzzle.actions';
 
 export enum PuzzleStatus {

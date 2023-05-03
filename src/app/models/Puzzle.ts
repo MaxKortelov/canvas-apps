@@ -22,6 +22,7 @@ export interface IResult {
   name: string;
   time: number;
   isLastResult: boolean;
+  difficulty: LEVEL;
 }
 
 export enum LEVEL {
