@@ -14,11 +14,11 @@ import { RouterModule } from '@angular/router';
 @NgModule({
   declarations: [AppComponent],
   imports: [
+    SharedModule,
     BrowserModule,
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({ maxAge: 25 }),
-    SharedModule,
     GamesModule,
     ShellModule,
     RouterModule,
