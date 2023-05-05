@@ -14,6 +14,10 @@ export class Piece {
   offset: { x: number; y: number };
   xCorrect: number;
   yCorrect: number;
+  top: number = 0;
+  bottom: number = 0;
+  left: number = 0;
+  right: number = 0;
 
   constructor(rowIndex: number, columnIndex: number, SIZE: ISize) {
     this.rowIndex = rowIndex;
@@ -35,19 +39,136 @@ export class Piece {
   draw(context: CanvasRenderingContext2D, video: HTMLVideoElement): void {
     context.beginPath();
 
+    const sz = Math.min(this.width, this.height);
+    const neck = 0.05 * sz;
+    const tabWidth = 0.3 * sz;
+    const tabHeight = 0.3 * sz;
+
+    // from top left
+    context.moveTo(this.x, this.y);
+    // to top right
+    if (this.top !== 0) {
+      context.lineTo(this.x + this.width * Math.abs(this.top) - neck, this.y);
+      context.bezierCurveTo(
+        this.x + this.width * Math.abs(this.top) - neck,
+        this.y - tabHeight * Math.sign(this.top) * 0.2,
+
+        this.x + this.width * Math.abs(this.top) - tabWidth,
+        this.y - tabHeight * Math.sign(this.top),
+
+        this.x + this.width * Math.abs(this.top),
+        this.y - tabHeight * Math.sign(this.top)
+      );
+
+      context.bezierCurveTo(
+        this.x + this.width * Math.abs(this.top) + tabWidth,
+        this.y - tabHeight * Math.sign(this.top),
+
+        this.x + this.width * Math.abs(this.top) + neck,
+        this.y - tabHeight * Math.sign(this.top) * 0.2,
+
+        this.x + this.width * Math.abs(this.top) + neck,
+        this.y
+      );
+    }
+    context.lineTo(this.x + this.width, this.y);
+    // to bottom right
+    if (this.right !== 0) {
+      context.lineTo(this.x + this.width, this.y + this.height * Math.abs(this.right) - neck);
+      context.bezierCurveTo(
+        this.x + this.width - tabWidth * Math.sign(this.right) * 0.2,
+        this.y + this.height * Math.abs(this.right) - neck,
+
+        this.x + this.width - tabWidth * Math.sign(this.right),
+        this.y + this.height * Math.abs(this.right) - tabWidth,
+
+        this.x + this.width - tabHeight * Math.sign(this.right),
+        this.y + this.height * Math.abs(this.right)
+      );
+      context.bezierCurveTo(
+        this.x + this.width - tabWidth * Math.sign(this.right),
+        this.y + this.height * Math.abs(this.right) + tabWidth,
+
+        this.x + this.width - tabWidth * Math.sign(this.right) * 0.2,
+        this.y + this.height * Math.abs(this.right) + neck,
+
+        this.x + this.width,
+        this.y + this.height * Math.abs(this.right) + neck
+      );
+    }
+    context.lineTo(this.x + this.width, this.y + this.height);
+    // to bottom left
+    if (this.bottom !== 0) {
+      context.lineTo(this.x + this.width * Math.abs(this.bottom) + neck, this.y + this.height);
+
+      context.bezierCurveTo(
+        this.x + this.width * Math.abs(this.bottom) + neck,
+        this.y + this.height + tabHeight * Math.sign(this.bottom) * 0.2,
+
+        this.x + this.width * Math.abs(this.bottom) + tabWidth,
+        this.y + this.height + tabHeight * Math.sign(this.bottom),
+
+        this.x + this.width * Math.abs(this.bottom),
+        this.y + this.height + tabHeight * Math.sign(this.bottom)
+      );
+      context.bezierCurveTo(
+        this.x + this.width * Math.abs(this.bottom) - tabWidth,
+        this.y + this.height + tabHeight * Math.sign(this.bottom),
+
+        this.x + this.width * Math.abs(this.bottom) - neck,
+        this.y + this.height + tabHeight * Math.sign(this.bottom) * 0.2,
+
+        this.x + this.width * Math.abs(this.bottom) - neck,
+        this.y + this.height
+      );
+    }
+    context.lineTo(this.x, this.y + this.height);
+    // to top left
+    if (this.left !== 0) {
+      context.lineTo(this.x, this.y + this.height * Math.abs(this.left) + neck);
+
+      context.bezierCurveTo(
+        this.x + tabHeight * Math.sign(this.left) * 0.2,
+        this.y + this.height * Math.abs(this.left) + neck,
+
+        this.x + tabHeight * Math.sign(this.left),
+        this.y + this.height * Math.abs(this.left) + tabWidth,
+
+        this.x + tabHeight * Math.sign(this.left),
+        this.y + this.height * Math.abs(this.left)
+      );
+
+      context.bezierCurveTo(
+        this.x + tabHeight * Math.sign(this.left),
+        this.y + this.height * Math.abs(this.left) - tabWidth,
+
+        this.x + tabHeight * Math.sign(this.left) * 0.2,
+        this.y + this.height * Math.abs(this.left) - neck,
+
+        this.x,
+        this.y + this.height * Math.abs(this.left) - neck
+      );
+    }
+    context.lineTo(this.x, this.y);
+
+    context.save();
+    context.clip();
+
+    const scaledTabHeight = Math.min(video.videoWidth / this.SIZE.columns, video.videoHeight / this.SIZE.rows) * 0.3;
+
     context.drawImage(
       video,
-      (this.columnIndex * video.videoWidth) / this.SIZE.columns,
-      (this.rowIndex * video.videoHeight) / this.SIZE.rows,
-      video.videoWidth / this.SIZE.columns,
-      video.videoHeight / this.SIZE.rows,
-      this.x,
-      this.y,
-      this.width,
-      this.height
+      (this.columnIndex * video.videoWidth) / this.SIZE.columns - scaledTabHeight,
+      (this.rowIndex * video.videoHeight) / this.SIZE.rows - scaledTabHeight,
+      video.videoWidth / this.SIZE.columns + scaledTabHeight * 2,
+      video.videoHeight / this.SIZE.rows + scaledTabHeight * 2,
+      this.x - tabWidth,
+      this.y - tabHeight,
+      this.width + tabWidth * 2,
+      this.height + tabWidth * 2
     );
+    context.restore();
 
-    context.rect(this.x, this.y, this.width, this.height);
     context.stroke();
   }
 

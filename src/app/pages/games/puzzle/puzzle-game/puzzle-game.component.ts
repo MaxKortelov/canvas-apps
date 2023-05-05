@@ -6,12 +6,12 @@ import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
 import * as fromPuzzleGame from '../state';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import {catchError, map, tap} from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { initializer } from '../../../../services/media.service';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
 import { ActivatedRoute, Router } from '@angular/router';
-import {LocalStorageService} from "../../../../services/local-storage.service";
-import * as fromAppState from "../../../../state";
+import { LocalStorageService } from '../../../../services/local-storage.service';
+import * as fromAppState from '../../../../state';
 
 @UntilDestroy()
 @Component({
@@ -21,9 +21,13 @@ import * as fromAppState from "../../../../state";
 })
 export class PuzzleGameComponent implements OnInit {
   @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement> | null = null;
-  @ViewChild('parentDiv', { static: false }) parentDiv: ElementRef<HTMLDivElement> | null = null;
 
-  constructor(private store: Store<State>, private router: Router, private route: ActivatedRoute, private localStorageService: LocalStorageService) {}
+  constructor(
+    private store: Store<State>,
+    private router: Router,
+    private route: ActivatedRoute,
+    private localStorageService: LocalStorageService
+  ) {}
 
   SCALER: number = 0;
   SIZE: ISize = initialSize();
@@ -58,17 +62,18 @@ export class PuzzleGameComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    initializer(this.parentDiv.nativeElement)
+    initializer()
       .pipe(
         tap((video) => {
           video.onloadeddata = () => {
             this.setSizes(video.width, video.height);
-            this.parentDiv.nativeElement.addEventListener('resize', () => this.setSizes(video.width, video.height));
+            window.addEventListener('resize', () => {
+              this.setSizes(video.width, video.height);
+            });
             this.canvas.nativeElement && this.updateGame(this.canvas.nativeElement, video);
 
             // divide canvas image into a pieces
             this.initializePieces();
-            // this.randomizePieceLocation();
             this.addCanvasListeners();
           };
         }),
@@ -113,8 +118,8 @@ export class PuzzleGameComponent implements OnInit {
   }
 
   private updateGame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
-    canvas.width = this.parentDiv.nativeElement.offsetWidth;
-    canvas.height = this.parentDiv.nativeElement.offsetHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     const context = this.canvas.nativeElement.getContext('2d');
 
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -126,24 +131,19 @@ export class PuzzleGameComponent implements OnInit {
     this.gameStatus === GAME_STATUS.PLAY && this.updateTime();
 
     for (let i = 0; i < this.PIECES.length; i++) {
-      context && this.PIECES[i].draw(context, video);
+      context && this.PIECES[i] && this.PIECES[i].draw(context, video);
     }
 
     window.requestAnimationFrame(() => this.updateGame(canvas, video));
   }
 
   private setSizes(videoWidth: number, videoHeight: number): void {
-    const resizer =
-      this.SCALER *
-      Math.min(
-        this.parentDiv.nativeElement.offsetWidth / videoWidth,
-        this.parentDiv.nativeElement.offsetHeight / videoHeight
-      );
+    const resizer = this.SCALER * Math.min(window.innerWidth / videoWidth, window.innerHeight / videoHeight);
 
     const width = resizer * videoWidth;
     const height = resizer * videoHeight;
-    const x = this.parentDiv.nativeElement.offsetWidth / 2 - width / 2;
-    const y = this.parentDiv.nativeElement.offsetHeight / 2 - height / 2;
+    const x = window.innerWidth / 2 - width / 2;
+    const y = window.innerHeight / 2 - height / 2;
 
     this.store.dispatch(fromPuzzleGameActions.changeSize({ SIZE: { ...this.SIZE, width, height, x, y } }));
   }
@@ -154,6 +154,29 @@ export class PuzzleGameComponent implements OnInit {
     for (let i = 0; i < this.SIZE.rows; i++) {
       for (let j = 0; j < this.SIZE.columns; j++) {
         this.PIECES.push(new Piece(i, j, this.SIZE));
+      }
+    }
+
+    // TODO - change with i;
+    let cnt = 0;
+    for (let i = 0; i < this.SIZE.rows; i++) {
+      for (let j = 0; j < this.SIZE.columns; j++) {
+        const piece = this.PIECES[cnt];
+        if (i !== this.SIZE.rows - 1) {
+          const sgn = Math.random() - 0.5 < 0 ? -1 : 1;
+          piece.bottom = sgn * Math.random() * 0.1 + 0.3;
+        }
+        if (j !== this.SIZE.columns - 1) {
+          const sgn = Math.random() - 0.5 < 0 ? -1 : 1;
+          piece.right = sgn * Math.random() * 0.1 + 0.3;
+        }
+        if (j !== 0) {
+          piece.left = -this.PIECES[cnt - 1].right;
+        }
+        if (i !== 0) {
+          piece.top = -this.PIECES[cnt - this.SIZE.columns].bottom;
+        }
+        cnt++;
       }
     }
   }
@@ -262,11 +285,14 @@ export class PuzzleGameComponent implements OnInit {
   }
 
   saveDataToLocalStorage(): void {
-    this.store.select(fromAppState.STATE).pipe(
-      untilDestroyed(this),
-      tap(localData => {
-        this.localStorageService.syncSaveData(localData);
-      })
-    ).subscribe()
+    this.store
+      .select(fromAppState.STATE)
+      .pipe(
+        untilDestroyed(this),
+        tap((localData) => {
+          this.localStorageService.syncSaveData(localData);
+        })
+      )
+      .subscribe();
   }
 }
