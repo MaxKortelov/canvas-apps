@@ -7,6 +7,6 @@ import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [GamesComponent],
-  imports: [CommonModule, PuzzleModule, RouterModule, GamesRoutingModule]
+  imports: [CommonModule, PuzzleModule, GamesRoutingModule]
 })
 export class GamesModule {}
