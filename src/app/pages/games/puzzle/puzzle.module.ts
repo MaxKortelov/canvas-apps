@@ -10,12 +10,14 @@ import { EffectsModule } from '@ngrx/effects';
 import { PuzzleRoutingModule } from './puzzle-routing.module';
 import { SharedModule } from '../../../@shared/components/shared.module';
 import { PuzzleEffects } from './state/puzzle.effects';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [PuzzleComponent, PuzzleHomeComponent, PuzzleGameComponent, PuzzleResultsComponent],
   imports: [
     CommonModule,
     PuzzleRoutingModule,
+    RouterModule,
     StoreModule.forFeature('puzzleGame', puzleGameReducer),
     EffectsModule.forFeature([PuzzleEffects]),
     SharedModule

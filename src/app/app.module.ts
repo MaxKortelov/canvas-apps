@@ -9,6 +9,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ShellModule } from './shell/shell.module';
 import { GamesModule } from './pages/games/games.module';
 import { SharedModule } from './@shared/components/shared.module';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { SharedModule } from './@shared/components/shared.module';
     SharedModule,
     GamesModule,
     ShellModule,
+    RouterModule,
     // keep last
     AppRoutingModule
   ],
