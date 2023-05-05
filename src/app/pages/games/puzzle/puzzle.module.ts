@@ -8,7 +8,7 @@ import { StoreModule } from '@ngrx/store';
 import { puzleGameReducer } from './state/puzzle.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { PuzzleRoutingModule } from './puzzle-routing.module';
-import { SharedModule } from '../../../@shared/components/shared.module';
+import { SharedModule } from '../../../shared/components/shared.module';
 import { PuzzleEffects } from './state/puzzle.effects';
 import { RouterModule } from '@angular/router';
 
