@@ -6,12 +6,13 @@ import { Piece } from '../../../../services/element.service';
 import { combineLatest, EMPTY } from 'rxjs';
 import * as fromPuzzleGame from '../state';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { initializer } from '../../../../services/media.service';
 import * as fromPuzzleGameActions from '../state/puzzle.actions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocalStorageService } from '../../../../services/local-storage.service';
 import * as fromAppState from '../../../../state';
+import { createRGBAColor, createRGBColor, getRandomColor } from '../../../../services/color.service';
 
 @UntilDestroy()
 @Component({
@@ -34,6 +35,10 @@ export class PuzzleGameComponent implements OnInit {
   name: string = '';
   PIECES: Piece[] = [];
   SELECTED_PIECE: Piece = null;
+
+  HELPER_CANVAS = document.createElement('canvas');
+  HELPER_CANVAS_CONTEXT = this.HELPER_CANVAS.getContext('2d');
+  CONTEXT: CanvasRenderingContext2D;
 
   PLAYED_TIME: number = 0;
   START_TIME: number = 0;
@@ -120,9 +125,15 @@ export class PuzzleGameComponent implements OnInit {
   private updateGame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    this.HELPER_CANVAS.width = window.innerWidth;
+    this.HELPER_CANVAS.height = window.innerHeight;
+
     const context = this.canvas.nativeElement.getContext('2d');
 
+    this.CONTEXT = context;
+
     context.clearRect(0, 0, canvas.width, canvas.height);
+    this.HELPER_CANVAS_CONTEXT.clearRect(0, 0, this.HELPER_CANVAS.width, this.HELPER_CANVAS.height);
 
     context.globalAlpha = 0.5;
     context.drawImage(video, this.SIZE.x, this.SIZE.y, this.SIZE.width, this.SIZE.height);
@@ -132,6 +143,7 @@ export class PuzzleGameComponent implements OnInit {
 
     for (let i = 0; i < this.PIECES.length; i++) {
       context && this.PIECES[i] && this.PIECES[i].draw(context, video);
+      context && this.PIECES[i] && this.PIECES[i].draw(this.HELPER_CANVAS_CONTEXT, video, false);
     }
 
     window.requestAnimationFrame(() => this.updateGame(canvas, video));
@@ -150,10 +162,16 @@ export class PuzzleGameComponent implements OnInit {
 
   private initializePieces(): void {
     this.PIECES = [];
+    const uniqueRandomColors: string[] = [];
 
     for (let i = 0; i < this.SIZE.rows; i++) {
       for (let j = 0; j < this.SIZE.columns; j++) {
-        this.PIECES.push(new Piece(i, j, this.SIZE));
+        let color = getRandomColor();
+        while (uniqueRandomColors.includes(color)) {
+          color = getRandomColor();
+        }
+        uniqueRandomColors.push(color);
+        this.PIECES.push(new Piece(i, j, this.SIZE, color));
       }
     }
 
@@ -225,8 +243,15 @@ export class PuzzleGameComponent implements OnInit {
   }
 
   private handleMouseDown(event: MouseEvent): void {
+    const imgData = this.HELPER_CANVAS_CONTEXT.getImageData(event.x, event.y, 1, 1);
+    if (imgData.data[3] === 0) {
+      return;
+    }
+
     this.gameStatus = GAME_STATUS.PLAY;
-    this.SELECTED_PIECE = this.getPressedPiece(event);
+    const clickedColor = createRGBColor(imgData.data[0], imgData.data[1], imgData.data[2], 0);
+    this.SELECTED_PIECE = this.getPressedPieceByColor(clickedColor);
+    // this.SELECTED_PIECE = this.getPressedPiece(event);
     if (this.SELECTED_PIECE) {
       const index = this.PIECES.indexOf(this.SELECTED_PIECE);
       if (index > -1) {
@@ -267,13 +292,22 @@ export class PuzzleGameComponent implements OnInit {
     }
   }
 
-  private getPressedPiece(location: MouseEvent): Piece {
+  // private getPressedPiece(location: MouseEvent): Piece {
+  //   for (let i = this.PIECES.length - 1; i >= 0; i--) {
+  //     const isOnPieceWidth =
+  //       location.offsetX > this.PIECES[i].x && location.offsetX < this.PIECES[i].x + this.PIECES[i].width;
+  //     const isOnPieceHeight =
+  //       location.offsetY > this.PIECES[i].y && location.offsetY < this.PIECES[i].y + this.PIECES[i].height;
+  //     if (isOnPieceWidth && isOnPieceHeight) {
+  //       return this.PIECES[i];
+  //     }
+  //   }
+  //   return null;
+  // }
+
+  private getPressedPieceByColor(clickedColor: string): Piece {
     for (let i = this.PIECES.length - 1; i >= 0; i--) {
-      const isOnPieceWidth =
-        location.offsetX > this.PIECES[i].x && location.offsetX < this.PIECES[i].x + this.PIECES[i].width;
-      const isOnPieceHeight =
-        location.offsetY > this.PIECES[i].y && location.offsetY < this.PIECES[i].y + this.PIECES[i].height;
-      if (isOnPieceWidth && isOnPieceHeight) {
+      if (this.PIECES[i].color === clickedColor) {
         return this.PIECES[i];
       }
     }

@@ -1,4 +1,4 @@
-import { EMPTY, from, Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export function initializer(): Observable<HTMLVideoElement> {

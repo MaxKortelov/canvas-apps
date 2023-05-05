@@ -18,11 +18,13 @@ export class Piece {
   bottom: number = 0;
   left: number = 0;
   right: number = 0;
+  color: string;
 
-  constructor(rowIndex: number, columnIndex: number, SIZE: ISize) {
+  constructor(rowIndex: number, columnIndex: number, SIZE: ISize, color: string) {
     this.rowIndex = rowIndex;
     this.columnIndex = columnIndex;
     this.SIZE = SIZE;
+    this.color = color;
 
     this.initializePiece(SIZE);
   }
@@ -36,7 +38,7 @@ export class Piece {
     this.yCorrect = this.y;
   }
 
-  draw(context: CanvasRenderingContext2D, video: HTMLVideoElement): void {
+  draw(context: CanvasRenderingContext2D, video: HTMLVideoElement, useCam = true): void {
     context.beginPath();
 
     const sz = Math.min(this.width, this.height);
@@ -156,17 +158,22 @@ export class Piece {
 
     const scaledTabHeight = Math.min(video.videoWidth / this.SIZE.columns, video.videoHeight / this.SIZE.rows) * 0.3;
 
-    context.drawImage(
-      video,
-      (this.columnIndex * video.videoWidth) / this.SIZE.columns - scaledTabHeight,
-      (this.rowIndex * video.videoHeight) / this.SIZE.rows - scaledTabHeight,
-      video.videoWidth / this.SIZE.columns + scaledTabHeight * 2,
-      video.videoHeight / this.SIZE.rows + scaledTabHeight * 2,
-      this.x - tabWidth,
-      this.y - tabHeight,
-      this.width + tabWidth * 2,
-      this.height + tabWidth * 2
-    );
+    if (useCam) {
+      context.drawImage(
+        video,
+        (this.columnIndex * video.videoWidth) / this.SIZE.columns - scaledTabHeight,
+        (this.rowIndex * video.videoHeight) / this.SIZE.rows - scaledTabHeight,
+        video.videoWidth / this.SIZE.columns + scaledTabHeight * 2,
+        video.videoHeight / this.SIZE.rows + scaledTabHeight * 2,
+        this.x - tabWidth,
+        this.y - tabHeight,
+        this.width + tabWidth * 2,
+        this.height + tabWidth * 2
+      );
+    } else {
+      context.fillStyle = this.color;
+      context.fillRect(this.x - tabHeight, this.y - tabHeight, this.width + tabHeight * 2, this.height * tabHeight * 2);
+    }
     context.restore();
 
     context.stroke();

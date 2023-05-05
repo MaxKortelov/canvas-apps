@@ -8,7 +8,9 @@
   <div class="game-stopper d-flex justify-content-center align-items-center" (click)="updateGameStatus()" *ngIf="isPausedGame && !isLoading">
     <i class="bi bi-play-circle play-icon cursor-pointer"></i>
   </div>
-  <app-loader [isLoading]="isLoading"></app-loader>
+  <div class="position-absolute top-0 left-0 d-flex justify-content-center align-items-center w-100 h-100" *ngIf="isLoading">
+    <app-loader [isLoading]="isLoading"></app-loader>
+  </div>
   <canvas *ngIf="!isLoading" #canvas class="canvas"></canvas>
 </div>
 

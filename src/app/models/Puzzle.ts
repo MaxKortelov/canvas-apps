@@ -27,10 +27,10 @@ export interface IResult {
 
 export enum LEVEL {
   BEGINNER = 3,
-  AMATOUR = 8,
-  HARD = 12,
-  EXTREMELY_HARD = 18,
-  INSANE = 24
+  AMATOUR = 6,
+  HARD = 8,
+  EXTREMELY_HARD = 10,
+  INSANE = 15
 }
 
 export enum GAME_STATUS {
