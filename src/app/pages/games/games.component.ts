@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { isSafari } from 'src/app/services/browser.service';
 
 @Component({
   selector: 'app-games',
@@ -11,12 +12,12 @@ export class GamesComponent implements OnInit {
       icon: 'puzzle-game.svg',
       name: 'Puzzle',
       description: 'Put all together pieces in a single picture.',
-      route: '/games/puzzle'
+      route: '/games/puzzle',
+      isVisible: !isSafari()
     }
   ];
 
   constructor() {}
 
   ngOnInit(): void {}
-
 }

@@ -1,9 +1,9 @@
 <div *ngFor="let game of GAMES" class="list w-100 h-100 d-flex p-3 gap-3">
-  <a class="card d-flex flex-row align-items-center no-decoration" routerLink="{{game.route}}">
-    <img src="assets/games/{{game.icon}}" />
+  <a class="card d-flex flex-row align-items-center no-decoration" routerLink="{{ game.route }}" *ngIf="game.isVisible">
+    <img src="assets/games/{{ game.icon }}" />
     <div>
-      <div class="text-bold h5">{{game.name}}</div>
-      <div>{{game.description}}</div>
+      <div class="text-bold h5">{{ game.name }}</div>
+      <div>{{ game.description }}</div>
     </div>
   </a>
 </div>
